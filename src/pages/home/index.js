@@ -20,10 +20,10 @@ export default function Home() {
                 <NavBar />
             </Grid>
             <CreatePost />
-            <Grid item xs={16} sm={8}>
+            <Grid item xs={8} sm={8}>
             <Paper >xs=12 sm=6</Paper>
             </Grid>
-            <Grid item xs={8} sm={4}>
+            <Grid item xs={4} sm={4}>
             <Paper >xs=12 sm=6</Paper>
             </Grid>
         </Grid>
