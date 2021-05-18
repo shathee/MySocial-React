@@ -21,8 +21,8 @@ export default function SignInBtn() {
     
     const signInBtnClicked = async () => {
         let userData = await signInWithGoogle();
-        if(userData) setUser(userData)
-        console.log(userData)
+        if(userData) setUser(userData);
+        
     }
     const classes = useStyles();
     return (

@@ -1,8 +1,11 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
 import {SignInBtn} from '../../componnts';
+import { UserContext } from '../../contexts/user';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -22,13 +25,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavBar() {
     const classes = useStyles();
+    const [user, setUser] = useContext(UserContext).user;
 
     return (
         <AppBar className={classes.appContainer} position="static">
             <Typography className={classes.siteTitle} variant="h3" noWrap>
                 MySocial-React
             </Typography>
-            <SignInBtn />
+            { user ? <Avatar alt={user.displayName} src={user.photoURL} /> : <SignInBtn /> }
+            
         </AppBar>
     )
 }
