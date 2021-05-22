@@ -5,13 +5,16 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import {SignInBtn} from '../../componnts/'
 import { makeStyles } from '@material-ui/core/styles';
 import { UserContext } from '../../contexts/user';
+import {storage, db}from '../../firebase/firebase'
 
+import firebase from 'firebase'
 
 const useStyles = makeStyles((theme) => ({
     createPostContainer: {
@@ -51,11 +54,20 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
+
 export default function CreatePost() {
     const [user, setUser] = useContext(UserContext).user;
     const [caption, setCaption] = useState("What's in your mind")
     const [imageFile, setImageFile] = useState(null)
+    const [upProgress, setUpProgress] = useState(0)
     const classes = useStyles()
+
+    const randId = () => {
+        const currentDate = new Date();
+        const timestamp = currentDate.getTime();
+        return timestamp;
+    }
+
 
     const handlePhotoUploadPreview = (e) => {
         if(e.target.files[0]){
@@ -69,7 +81,34 @@ export default function CreatePost() {
     }
 
     const handlePost = () => {
+        
+        if (imageFile) {
+            let imageName = randId()
+            let imageExt = imageFile.type.split('/')
+            let imgPath = imageName+'.'+imageExt[imageExt.length-1]
+            // console.log(imageName+'.'+imageExt[imageExt.length-1])
+            const uploadTask = storage.ref(`images/${imgPath}`).put(imageFile)
+            
+            // upload progress
+            uploadTask.on("state_change", (snapshot) => {
+                const progress = Math.round((snapshot.bytesTransferred/snapshot.totalBytes)*100)
+                setUpProgress(progress)
 
+            }, error => {
+                console.log(error);
+            }, () => {
+                storage.ref("images").child(imgPath).getDownloadURL()
+                .then((imageUrl) => {
+                    db.collection("posts").add({
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        caption: caption,
+                        img: imageUrl,
+                        photourl: user.photoURL,
+                        username: user.email
+                    })
+                });
+            });
+        }
     }
 
     return (
@@ -104,11 +143,12 @@ export default function CreatePost() {
                                 onChange={handlePhotoUploadPreview}
                             />
                             </Button>
-                           
+                            <LinearProgress variant="determinate" value={upProgress} />
+                            
                             <Button
                                 variant="contained"
                                 component="label"
-                                onChange={handlePost}
+                                onClick={handlePost}
                             >
                             <PostAddIcon />Post
                             </Button>
