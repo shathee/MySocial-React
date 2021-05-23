@@ -9,26 +9,32 @@ import CardActions from '@material-ui/core/CardActions';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import Badge from '@material-ui/core/Badge';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CommentIcon from '@material-ui/icons/Comment';
-// import { UserContext } from '../../contexts/user';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
 import {Comment} from '../../componnts'
+import { db, storage } from '../../firebase/firebase'
 
 
 const useStyles = makeStyles((theme) => ({
     postContainer: {
        width: '80%',
        padding: '10px',
-       margin: '10px auto'
+       margin: '10px auto',
+       backgroundColor: '#f1faee'
     },
     postImage: {
-        height: '250px'
+        height: '100%',
+        width: '100%'
     },
     expand: {
         transform: 'rotate(0deg)',
@@ -41,16 +47,49 @@ const useStyles = makeStyles((theme) => ({
     },
     postDel: {
         marginLeft: 'auto',
+    },
+    delAlert: {
+        color: '#c40000',
+        fontSize: '1.5rem',
+        textAlign: 'center'
     }
   }));
 
 export default function Post({username, caption, img, photourl, created, comments, id}) {
     // const [user, setUser] = useContext(UserContext).user
     const [expanded, setExpanded] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
 
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+    
+    const handleDeletePost = () => {
+        
+        // remove file from firebase storage
+        let imgRef = storage.refFromURL(img);
+        imgRef.delete().then(()=>{
+            console.log('del from storage')
+        }).catch((err)=>{
+            console.log(err)
+        })
+        // del post
+        db.collection('posts').doc(id).delete()
+        .then(()=>{
+            console.log('del successfull')
+        }).catch((err)=>{
+            console.log(err)
+        })
+
+        handleClose()
+    }
     const classes = useStyles()
     
 
@@ -89,12 +128,32 @@ export default function Post({username, caption, img, photourl, created, comment
                     <CommentIcon />
                     <ExpandMoreIcon />
                 </IconButton>
-                <IconButton className={classes.postDel}>
+                <IconButton onClick={handleClickOpen} className={classes.postDel}>
                     <DeleteIcon color="secondary" />
                 </IconButton>
+                <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                 >
+                    <DialogContent>
+                        <DialogContentText className={classes.delAlert} id="alert-dialog-description">
+                        This will permanently remove this post and its content and comments!!!
+                        Do You still want to continue?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                            No
+                        </Button>
+                        <Button onClick={handleDeletePost} color="primary" autoFocus>
+                            Yes
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
-                
                 <CardContent>
                 
                     { comments ? (

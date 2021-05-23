@@ -12,9 +12,10 @@ const useStyles = makeStyles((theme) => ({
     appContainer: {
         display: 'flex',
         flexFlow: 'row',
-        alignItem: 'center',
+        alignItems: 'center',
         padding: '10px',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        height: '100%'
     },
     siteTitle: {
         width: '80%',

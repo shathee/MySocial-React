@@ -8,20 +8,24 @@ import {CreatePost, NavBar, Feed, People} from '../../containers'
 
 const useStyles = makeStyles((theme) => ({
     homeContainer: {
-       minHeight: '80vh',
+       minHeight: '20vh',
     },
     feedNpeople: {
         display: 'flex',
         flexFlow: 'row',
         padding:'15px'
+    },
+    navContainer: {
+        margin: '0px',
+        height: '15vh'
     }
   }));
   
 export default function Home() {
     const classes = useStyles()
     return (
-        <Grid className={classes.homeContainer} container spacing={3}>
-            <Grid xs={12}>
+        <Grid className={classes.homeContainer} container>
+            <Grid className={classes.navContainer} xs={12}>
                 <NavBar />
             </Grid>
             <Grid className={classes.feedNpeople} xs={12} sm={12}>

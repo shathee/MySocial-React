@@ -101,7 +101,7 @@ export default function CreatePost() {
                         caption: caption,
                         img: imageUrl,
                         photourl: user.photoURL,
-                        username: user.email,
+                        username: user.email.split('@')[0],
                         created:firebase.firestore.FieldValue.serverTimestamp()
                     });
                 });
