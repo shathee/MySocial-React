@@ -12,7 +12,7 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import {SignInBtn} from '../../componnts/'
 import { makeStyles } from '@material-ui/core/styles';
 import { UserContext } from '../../contexts/user';
-import {storage, db}from '../../firebase/firebase'
+import { storage, db } from '../../firebase/firebase'
 
 import firebase from 'firebase'
 
@@ -71,7 +71,6 @@ export default function CreatePost() {
 
     const handlePhotoUploadPreview = (e) => {
         if(e.target.files[0]){
-            
             setImageFile(e.target.files[0])
             let imgFileSrc = URL.createObjectURL(e.target.files[0])
             let imgPreview = document.getElementById('image_preview')
@@ -86,10 +85,8 @@ export default function CreatePost() {
             let imageName = randId()
             let imageExt = imageFile.type.split('/')
             let imgPath = imageName+'.'+imageExt[imageExt.length-1]
-            // console.log(imageName+'.'+imageExt[imageExt.length-1])
             const uploadTask = storage.ref(`images/${imgPath}`).put(imageFile)
             
-            // upload progress
             uploadTask.on("state_change", (snapshot) => {
                 const progress = Math.round((snapshot.bytesTransferred/snapshot.totalBytes)*100)
                 setUpProgress(progress)
@@ -104,10 +101,10 @@ export default function CreatePost() {
                         caption: caption,
                         img: imageUrl,
                         photourl: user.photoURL,
-                        username: user.email
+                        username: user.email,
+                        created:firebase.firestore.FieldValue.serverTimestamp()
                     });
                 });
-                console.log('reached')
                 setCaption("");
                 setUpProgress(0);
                 setImageFile(null);
@@ -118,10 +115,9 @@ export default function CreatePost() {
         
     }
 
-    console.log(caption, upProgress, imageFile)
 
     return (
-        <Grid className={classes.createPostContainer} item xs={12} sm={12}>
+        <Grid className={classes.createPostContainer} xs={12} sm={12}>
             <Paper  className={classes.textFieldContainer} px={10}>
                 { user ? (
                     <Box className={classes.createPostBoxOuter}>
