@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreatePost() {
     const [user, setUser] = useContext(UserContext).user;
-    const [caption, setCaption] = useState("What's in your mind")
+    const [caption, setCaption] = useState("")
     const [imageFile, setImageFile] = useState(null)
     const [upProgress, setUpProgress] = useState(0)
     const classes = useStyles()
@@ -105,11 +105,20 @@ export default function CreatePost() {
                         img: imageUrl,
                         photourl: user.photoURL,
                         username: user.email
-                    })
+                    });
                 });
+                console.log('reached')
+                setCaption("");
+                setUpProgress(0);
+                setImageFile(null);
+                document.getElementById('image_preview').style.display = 'none'
             });
+
         }
+        
     }
+
+    console.log(caption, upProgress, imageFile)
 
     return (
         <Grid className={classes.createPostContainer} item xs={12} sm={12}>
@@ -119,10 +128,10 @@ export default function CreatePost() {
                         <Box className={classes.createPostBoxInner}>
                             <TextField 
                                 onChange={(e) => setCaption(e.target.value)}
+                                value={caption}
                                 label="Write your post here"
                                 multiline
                                 rows={4}
-                                // defaultValue={caption}
                                 fullWidth
                             />
                         </Box>
