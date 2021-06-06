@@ -21,8 +21,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
-import {Comment} from '../../componnts'
+import {Comment, CommentInput} from '../../componnts'
 import { db, storage } from '../../firebase/firebase'
+import {UserContext} from '../../contexts/user'
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 export default function Post({username, caption, img, photourl, created, comments, id}) {
-    // const [user, setUser] = useContext(UserContext).user
+    const [user, setUser] = useContext(UserContext).user
     const [expanded, setExpanded] = React.useState(false);
     const [open, setOpen] = React.useState(false);
 
@@ -128,9 +130,15 @@ export default function Post({username, caption, img, photourl, created, comment
                     <CommentIcon />
                     <ExpandMoreIcon />
                 </IconButton>
-                <IconButton onClick={handleClickOpen} className={classes.postDel}>
-                    <DeleteIcon color="secondary" />
-                </IconButton>
+                {   
+                    
+                    user && (username === user.email.split('@')[0]) ? (
+                        <IconButton onClick={handleClickOpen} className={classes.postDel}>
+                            <DeleteIcon color="secondary" />
+                        </IconButton>
+                    ) : ( <> </> )
+                }
+                
                 <Dialog
                 open={open}
                 onClose={handleClose}
@@ -155,16 +163,17 @@ export default function Post({username, caption, img, photourl, created, comment
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                
+
                     { comments ? (
-                        comments.map((comment) => {
-                            return <Comment comment={comment.comment} user={comment.username} />
+                        comments.map((comment, index) => {
+                            return <Comment key={index} comment={comment.comment} user={comment.username} />
                         })
                         ):
                         (<>No Comments for this post</>)
                     }
                 </CardContent>
             </Collapse>
+            <CommentInput user={user} comments={comments} postid={id} />
            
             
         </Card>
