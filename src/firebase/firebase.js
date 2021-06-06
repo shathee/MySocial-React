@@ -12,7 +12,7 @@ const firebaseConfig = {
   };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
-const firebaseAnalytics = firebase.analytics();
+// const firebaseAnalytics = firebase.analytics();
 
 const db = firebaseApp.firestore();
 const auth = firebase.auth();

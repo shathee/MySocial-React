@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import Box from '@material-ui/core/Box'
 import TextField from '@material-ui/core/TextField'
 import { Button } from '@material-ui/core'
-import { db } from '../../firebase/firebase'
+// import { db } from '../../firebase/firebase'
 
 export default function CommentInput({comments, user, postid}) {
     const [comment, setComment] = useState("")
@@ -10,7 +10,7 @@ export default function CommentInput({comments, user, postid}) {
     
     const addComment = () => {
         console.log(commentArray)
-        if(comment != ""){
+        if(comment !== ""){
             commentArray.push({
                 comment: comment,
                 username: user.email.split('@')[0]
